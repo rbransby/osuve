@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Priority_Queue;
+using Random = System.Random;
 
 public class World : MonoBehaviour
 {
@@ -19,15 +20,20 @@ public class World : MonoBehaviour
 	[SerializeField] private static int _viewRangeVertical = 3;
 	private static ChunkPos _playerPos;
 
+	[Tooltip("-1 stands for random seed.")] public int seed = 0;
+
+	private static int xSeed;
+	private static int zSeed = 0;
+
 	void Start()
 	{
+		var r = new Random(seed == 0 ? DateTime.Now.Millisecond + DateTime.Now.Second * 1000 : seed);
+		xSeed = r.Next() * r.Next(1) == 0 ? -1 : 1;
+		zSeed = r.Next() * r.Next(1) == 0 ? -1 : 1;
+		
 		_playerPos = new ChunkPos(Camera.main.transform.position / chunkSize);
 
 		GenerateChunks();
-
-		#if UNITY_EDITOR
-		UnityEditor.SceneView.FocusWindowIfItsOpen(typeof(UnityEditor.SceneView));
-		#endif
 	}
 
 	void Update()
@@ -322,7 +328,8 @@ public class World : MonoBehaviour
 	public static float SimplexNoise(float x, float y, float z, float scale, float height, float power)
 	{
 		float rValue;
-		rValue = Noise.Noise.GetNoise(((double)x) / scale, ((double)y) / scale, ((double)z) / scale);
+		rValue = Noise.Noise.GetNoise(((double)x) / scale + xSeed, ((double)y) / scale,
+			((double)z) / scale + zSeed);
 		rValue *= height;
 
 		if (power != 0)

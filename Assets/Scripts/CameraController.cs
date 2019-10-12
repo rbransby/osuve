@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
 	[SerializeField] private float speed = 5f;
+	[SerializeField] private float lookSpeed = 10f;
 	[SerializeField] private bool freeLook;
 
 	private Transform _trans;
@@ -59,8 +60,8 @@ public class CameraController : MonoBehaviour
 		if (Cursor.lockState == CursorLockMode.Locked)
 		{
 			// Process mouse delta
-			_yaw += Input.GetAxis("Mouse X");
-			_pitch += -Input.GetAxis("Mouse Y");
+			_yaw += Input.GetAxis("Mouse X") * lookSpeed;
+			_pitch += -Input.GetAxis("Mouse Y") * lookSpeed;
 
 			// Clamp pitch to +-90 degrees
 			_pitch = Mathf.Clamp(_pitch, -89.9f, 89.9f);
